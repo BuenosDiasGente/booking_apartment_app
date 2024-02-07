@@ -1,6 +1,7 @@
 package com.example.rent_db.service.impl;
 
 import com.example.rent_db.exception.ApartmentException;
+import com.example.rent_db.exception.ExitsApartmentException;
 import com.example.rent_db.mapper.ApplicationMapper;
 import com.example.rent_db.model.dto.BookingDto;
 import com.example.rent_db.model.dto.CreateApartmentsDto;
@@ -8,10 +9,14 @@ import com.example.rent_db.model.dto.FullApartmentsInfo;
 import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
 import com.example.rent_db.model.entity.AddressEntity;
 import com.example.rent_db.model.entity.ApartmentEntity;
+import com.example.rent_db.model.entity.BookingHistory;
+import com.example.rent_db.model.entity.UserApplicationEntity;
 import com.example.rent_db.model.geoCoderModels.Components;
 import com.example.rent_db.model.geoCoderModels.GeocoderResponse;
 import com.example.rent_db.repository.AddressRepository;
 import com.example.rent_db.repository.ApartmentRepository;
+import com.example.rent_db.repository.UserApplicationRepository;
+import com.example.rent_db.service.AuthService;
 import com.example.rent_db.service.RentApartmentService;
 import com.example.rent_db.service.RestTemplateManager;
 import jakarta.persistence.EntityManager;
@@ -26,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.rent_db.constant.RentDbConstant.*;
 import static java.util.Objects.isNull;
@@ -40,6 +46,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private final RestTemplateManager restTemplateManager;
     private final EntityManager entityManager;
     private final ApartmentRepository apartmentRepository;
+    private final AuthService authService;
 
 
     /**
@@ -162,7 +169,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
      * @return
      */
     @Override
-    public String addApartment(Long id, CreateApartmentsDto createApartmentsDto) {
+    public FullApartmentsInfo addApartment(Long id, CreateApartmentsDto createApartmentsDto) {
         log.info("RentApartmentServiceImpl: ->addApartment");
 
         boolean present = apartmentRepository.findById(id).isPresent();
@@ -171,7 +178,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         AddressEntity address = applicationMapper.mappingCreateApartmentsDto(createApartmentsDto);
         if (present) {
             log.info("RentApartmentServiceImpl: <-addApartment");
-            return APARTMENT_EXIST;
+            return null;
 
         } else {
             apartment.setDateRegistration(LocalDateTime.now());
@@ -179,8 +186,9 @@ public class RentApartmentServiceImpl implements RentApartmentService {
             address.setApartment(apartment);
             apartmentRepository.save(apartment);
             addressRepository.save(address);
+            FullApartmentsInfo fullApartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, apartment);
             log.info("RentApartmentServiceImpl: <-addApartment");
-            return APARTMENT_CREATE;
+            return fullApartmentsInfo;
         }
     }
 
@@ -194,8 +202,31 @@ public class RentApartmentServiceImpl implements RentApartmentService {
      */
     @Override
     public FullApartmentsInfo bookingApartment(Long id, BookingDto bookingDto, String token) {
-        return null;
+        UserApplicationEntity userApplication = authService.checkToken(token);
+
+        BookingHistory bookingHistory = applicationMapper.mappingBookingDto(bookingDto);
+
+        FullApartmentsInfo apartmentById = searchApartmentById(id);
+        ApartmentEntity apartment = applicationMapper.mappingFullApartmentInfo(apartmentById);
+        AddressEntity address = applicationMapper.mappingsFullApartmentInfo(apartmentById);
+        boolean availability = apartmentById.isAvailability();
+
+        if (availability) {
+            bookingHistory.setCheckIn(bookingHistory.getCheckIn());
+            bookingHistory.setCheckOut(bookingHistory.getCheckOut());
+            bookingHistory.setPriceDay(null);
+            bookingHistory.setTotalValueDiscount(null);
+            bookingHistory.setProducts(null);
+            bookingHistory.setUser(userApplication);
+            bookingHistory.setApartment(apartment);
+            FullApartmentsInfo apartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, apartment);
+            return apartmentsInfo;
+        } else {
+            return null;
+            //альтернативы возращения ,если не хочется возвращать  null
+        }
     }
+
 
     /**
      * criteria API

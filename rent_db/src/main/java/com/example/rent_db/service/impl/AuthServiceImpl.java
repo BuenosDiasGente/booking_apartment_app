@@ -3,8 +3,6 @@ package com.example.rent_db.service.impl;
 import com.example.rent_db.exception.ApartmentException;
 import com.example.rent_db.exception.TokenException;
 import com.example.rent_db.model.dto.AuthDto;
-import com.example.rent_db.model.dto.FullApartmentsInfo;
-import com.example.rent_db.model.entity.ApartmentEntity;
 import com.example.rent_db.model.entity.UserApplicationEntity;
 import com.example.rent_db.repository.UserApplicationRepository;
 import com.example.rent_db.service.AuthService;
@@ -30,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * метод регистрации пользователя
+     *
      * @param user
      * @return
      */
@@ -58,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * метод авторизации пользователя
+     *
      * @param user
      * @return
      */
@@ -81,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * генерация уникальных значений
+     *
      * @return
      */
     private String generateToken() {
@@ -90,14 +91,19 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * метод проверки авторизации пользователя
+     *
      * @param token
      */
     @Override
-    public void checkToken(String token) {
+    public UserApplicationEntity checkToken(String token) {
         log.info("AuthServiceImpl: ->checkToken");
         UserApplicationEntity userApplication = userApplicationEntityRepository.findUserApplicationEntitiesByToken(token)
-                .orElseThrow(TokenException::new);
-        log.info("AuthServiceImpl:<-checkToken");
+                .orElseThrow(() -> {
+                    log.error("AuthServiceImpl: checkToken: Not found user by" + token);
+                    return new TokenException();
+                });
+        log.info("AuthServiceImpl: <-checkToken");
+        return userApplication;
     }
 
 

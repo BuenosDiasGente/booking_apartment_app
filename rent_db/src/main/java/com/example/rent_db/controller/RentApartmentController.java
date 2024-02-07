@@ -22,7 +22,7 @@ public class RentApartmentController {
     private Logger log = LoggerFactory.getLogger(RentApartmentController.class);
 
     private final RentApartmentService userApplicationEntityService;
-    private final AuthService authService;
+   // private final AuthService authService;
 
 
     @GetMapping(SEARCH_APARTMENT)
@@ -47,8 +47,10 @@ public class RentApartmentController {
                                                                @RequestHeader(required = false) String token) {
         if (isNull(bookingDto)) {
             return wrapResponse(userApplicationEntityService.searchApartmentById(id));
-        } else {
-            authService.checkToken(token);
+        }
+
+        else {
+           // authService.checkToken(token);
             return wrapResponse(userApplicationEntityService.bookingApartment(id, bookingDto, token));
 
         }
@@ -63,7 +65,7 @@ public class RentApartmentController {
     }
 
     @PostMapping(ADD_NEW_APARTMENT)
-    public ResponseEntity<String> addApartment(@PathVariable Long id,
+    public ResponseEntity<FullApartmentsInfo> addApartment(@PathVariable Long id,
                                                @RequestBody CreateApartmentsDto createApartmentsDto) {
         return ResponseEntity.ok(userApplicationEntityService.addApartment(id, createApartmentsDto));
     }

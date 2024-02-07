@@ -27,4 +27,5 @@ public interface ApartmentRepository extends JpaRepository<ApartmentEntity, Long
     @Query(value = "SELECT a FROM ApartmentEntity a WHERE a.countRooms = :countRooms AND a.price = :price")
     List<ApartmentEntity> findAllApartmentsCountRoomsAndPriceFilter(Integer countRooms, Integer price);
 
+
 }

@@ -20,12 +20,14 @@ public class RentDbConstant {
     public static final String LOGIN_REGISTRATION_ERROR = "Такой login занят,введите другой";
     public static final String INVALID_PARAMS_ERROR = "Неверные параметры входа";
     public static final String ID_APARTMENT_ERROR = "Апартаменты не найдены";
+    public static final String APARTMENT_EXIST = "Данные апратаменты, числяться в базе данных";
+
 
     /**
      * Constant message
      */
     public static final String REGISTRATION_DONE = "Пользователь зарегистрирован.";
-    public static final String APARTMENT_EXIST = "Данные апратаменты, числяться в базе данных";
+
     public static final String APARTMENT_CREATE = "Апрартаменты добавлены";
 
 }

@@ -15,4 +15,5 @@ public class CreateApartmentsDto {
     private String flatNumber;
     private Integer countRooms;
     private Integer price;
+    private boolean availability;
 }

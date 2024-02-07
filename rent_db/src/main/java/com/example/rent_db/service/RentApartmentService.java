@@ -19,7 +19,7 @@ public interface RentApartmentService {
 
     FullApartmentsInfo searchApartmentById(Long id);
 
-    String addApartment(Long id,CreateApartmentsDto createApartmentsDto);
+    FullApartmentsInfo addApartment(Long id,CreateApartmentsDto createApartmentsDto);
 
     SearchApartmentsResponseDto searchApartments(String city, Integer countRooms, Integer price);
 

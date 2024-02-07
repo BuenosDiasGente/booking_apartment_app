@@ -5,7 +5,8 @@ import com.example.rent_db.model.entity.UserApplicationEntity;
 
 public interface AuthService {
     String registerUser(UserApplicationEntity user);
+
     String authUser(AuthDto user);
 
-    void checkToken(String token);
+    UserApplicationEntity checkToken(String token);
 }
