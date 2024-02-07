@@ -41,6 +41,11 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private final ApartmentRepository apartmentRepository;
 
 
+    /**
+     * метод фильтрует поиск апартаментов по городу
+     * @param city
+     * @return
+     */
     @Override
     public SearchApartmentsResponseDto searchApartments(String city) {
         List<AddressEntity> listAddressEntity = addressRepository.findApartmentByCity(city);
@@ -52,6 +57,12 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return new SearchApartmentsResponseDto(resultList);
     }
 
+    /**
+     * метод фильтрует поиск апартаментов по городу и количеству комнат
+     * @param city
+     * @param countRooms
+     * @return
+     */
     @Override
     public SearchApartmentsResponseDto searchApartments(String city, Integer countRooms) {
         List<AddressEntity> addresList = addressRepository.findAllApartmentsBYCountRoomsAndCityFilter(city, countRooms);
@@ -63,6 +74,12 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return new SearchApartmentsResponseDto(resultList);
     }
 
+    /**
+     * метод фильтрует поиск апартаментов по городу и цене
+     * @param city
+     * @param price
+     * @return
+     */
     @Override
     public SearchApartmentsResponseDto searchApartmentsPrice(String city, Integer price) {
         List<AddressEntity> addressList = findAddressListWithCriteria(city, price);
@@ -73,7 +90,6 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         }
         return new SearchApartmentsResponseDto(resultList);
     }
-
 
     /**
      * Поиск апартаментов по id
@@ -94,6 +110,42 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return apartmentInfo;
     }
 
+    /**
+     * метод фильтрует поиск апартаментов по городу, количеству комнат и цене
+     * @param city
+     * @param countRooms
+     * @param price
+     * @return
+     */
+    @Override
+    public SearchApartmentsResponseDto searchApartments(String city, Integer countRooms, Integer price) {
+        List<AddressEntity> addresList = addressRepository.findAllApartmentsBYPriceAndCountRoomsAndCityFilter(city, countRooms, price);
+        List<FullApartmentsInfo> resultList = new ArrayList<>();
+        for (AddressEntity address : addresList) {
+            FullApartmentsInfo fullApartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, address.getApartment());
+            resultList.add(fullApartmentsInfo);
+        }
+        return new SearchApartmentsResponseDto(resultList);
+    }
+
+    /**
+     * метод поиска апартаментов по геолакации
+     * @param latitude
+     * @param longitude
+     * @return
+     */
+    @Override
+    public SearchApartmentsResponseDto searchApartmentsByLoc(String latitude, String longitude) {
+        GeocoderResponse infoByLocation = restTemplateManager.getInfoByLocation(latitude, longitude);
+        String cityInfo = searchCityInfo(infoByLocation);
+        List<AddressEntity> addresList = addressRepository.findApartmentByCity(cityInfo);
+        List<FullApartmentsInfo> resultList = new ArrayList<>();
+        for (AddressEntity address : addresList) {
+            FullApartmentsInfo fullApartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, address.getApartment());
+            resultList.add(fullApartmentsInfo);
+        }
+        return new SearchApartmentsResponseDto(resultList);
+    }
 
     /**
      * Добавление новых апартаментов.
@@ -147,29 +199,6 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return entityManager.createQuery(query).getResultList();
     }
 
-    @Override
-    public SearchApartmentsResponseDto searchApartments(String city, Integer countRooms, Integer price) {
-        List<AddressEntity> addresList = addressRepository.findAllApartmentsBYPriceAndCountRoomsAndCityFilter(city, countRooms, price);
-        List<FullApartmentsInfo> resultList = new ArrayList<>();
-        for (AddressEntity address : addresList) {
-            FullApartmentsInfo fullApartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, address.getApartment());
-            resultList.add(fullApartmentsInfo);
-        }
-        return new SearchApartmentsResponseDto(resultList);
-    }
-
-    @Override
-    public SearchApartmentsResponseDto searchApartmentsByLoc(String latitude, String longitude) {
-        GeocoderResponse infoByLocation = restTemplateManager.getInfoByLocation(latitude, longitude);
-        String cityInfo = searchCityInfo(infoByLocation);
-        List<AddressEntity> addresList = addressRepository.findApartmentByCity(cityInfo);
-        List<FullApartmentsInfo> resultList = new ArrayList<>();
-        for (AddressEntity address : addresList) {
-            FullApartmentsInfo fullApartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, address.getApartment());
-            resultList.add(fullApartmentsInfo);
-        }
-        return new SearchApartmentsResponseDto(resultList);
-    }
 
     private String searchCityInfo(GeocoderResponse value) {
         Components components = value.getResultsList().get(0).getComponents();
