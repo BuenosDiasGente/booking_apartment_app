@@ -2,6 +2,7 @@ package com.example.rent_db.service.impl;
 
 import com.example.rent_db.exception.ApartmentException;
 import com.example.rent_db.mapper.ApplicationMapper;
+import com.example.rent_db.model.dto.BookingDto;
 import com.example.rent_db.model.dto.CreateApartmentsDto;
 import com.example.rent_db.model.dto.FullApartmentsInfo;
 import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
@@ -43,6 +44,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * метод фильтрует поиск апартаментов по городу
+     *
      * @param city
      * @return
      */
@@ -59,6 +61,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * метод фильтрует поиск апартаментов по городу и количеству комнат
+     *
      * @param city
      * @param countRooms
      * @return
@@ -76,6 +79,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * метод фильтрует поиск апартаментов по городу и цене
+     *
      * @param city
      * @param price
      * @return
@@ -93,6 +97,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * Поиск апартаментов по id
+     *
      * @param id
      * @return
      */
@@ -112,6 +117,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * метод фильтрует поиск апартаментов по городу, количеству комнат и цене
+     *
      * @param city
      * @param countRooms
      * @param price
@@ -130,6 +136,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * метод поиска апартаментов по геолакации
+     *
      * @param latitude
      * @param longitude
      * @return
@@ -149,6 +156,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     /**
      * Добавление новых апартаментов.
+     *
      * @param id
      * @param createApartmentsDto
      * @return
@@ -176,7 +184,18 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         }
     }
 
-
+    /**
+     * метод бронирования аппартаментов
+     *
+     * @param id
+     * @param bookingDto
+     * @param token
+     * @return
+     */
+    @Override
+    public FullApartmentsInfo bookingApartment(Long id, BookingDto bookingDto, String token) {
+        return null;
+    }
 
     /**
      * criteria API
