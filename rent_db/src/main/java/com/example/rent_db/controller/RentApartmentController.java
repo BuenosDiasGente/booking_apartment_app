@@ -1,9 +1,7 @@
 package com.example.rent_db.controller;
 
-import com.example.rent_db.model.dto.BookingDto;
-import com.example.rent_db.model.dto.CreateApartmentsDto;
-import com.example.rent_db.model.dto.FullApartmentsInfo;
-import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
+import com.example.rent_db.model.dto.*;
+import com.example.rent_db.model.entity.ApartmentEntity;
 import com.example.rent_db.service.AuthService;
 import com.example.rent_db.service.RentApartmentService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ public class RentApartmentController {
     private Logger log = LoggerFactory.getLogger(RentApartmentController.class);
 
     private final RentApartmentService userApplicationEntityService;
-   // private final AuthService authService;
+
 
 
     @GetMapping(SEARCH_APARTMENT)
@@ -41,20 +39,19 @@ public class RentApartmentController {
         return wrapResponse(userApplicationEntityService.searchApartments(city, countRooms, price));
     }
 
-    @GetMapping(BOOKING_APARTMENT)
-    public ResponseEntity<FullApartmentsInfo> bookingApartment(@RequestParam Long id,
-                                                               @RequestBody(required = false) BookingDto bookingDto,
-                                                               @RequestHeader(required = false) String token) {
+    @PostMapping(BOOKING_APARTMENT)
+    public BookingResponse bookingApartment(@RequestParam Long id,
+                                            @RequestBody(required = false) BookingDto bookingDto,
+                                            @RequestHeader(required = false) String token) {
         if (isNull(bookingDto)) {
-            return wrapResponse(userApplicationEntityService.searchApartmentById(id));
+            ApartmentEntity apartment = userApplicationEntityService.searchApartmentById(id);
+
+            return new BookingResponse(null, userApplicationEntityService.prepareFullApartmentInfo(apartment));
+        } else {
+
+            return userApplicationEntityService.bookingApartment(id, bookingDto, token);
+
         }
-
-        else {
-           // authService.checkToken(token);
-            return wrapResponse(userApplicationEntityService.bookingApartment(id, bookingDto, token));
-
-        }
-
     }
 
 
@@ -66,7 +63,7 @@ public class RentApartmentController {
 
     @PostMapping(ADD_NEW_APARTMENT)
     public ResponseEntity<FullApartmentsInfo> addApartment(@PathVariable Long id,
-                                               @RequestBody CreateApartmentsDto createApartmentsDto) {
+                                                           @RequestBody CreateApartmentsDto createApartmentsDto) {
         return ResponseEntity.ok(userApplicationEntityService.addApartment(id, createApartmentsDto));
     }
 

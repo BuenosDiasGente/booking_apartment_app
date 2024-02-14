@@ -3,10 +3,7 @@ package com.example.rent_db.service.impl;
 import com.example.rent_db.exception.ApartmentException;
 import com.example.rent_db.exception.ExitsApartmentException;
 import com.example.rent_db.mapper.ApplicationMapper;
-import com.example.rent_db.model.dto.BookingDto;
-import com.example.rent_db.model.dto.CreateApartmentsDto;
-import com.example.rent_db.model.dto.FullApartmentsInfo;
-import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
+import com.example.rent_db.model.dto.*;
 import com.example.rent_db.model.entity.AddressEntity;
 import com.example.rent_db.model.entity.ApartmentEntity;
 import com.example.rent_db.model.entity.BookingHistory;
@@ -109,7 +106,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
      * @return
      */
     @Override
-    public FullApartmentsInfo searchApartmentById(Long id) {
+    public ApartmentEntity searchApartmentById(Long id) {
         log.info("RentApartmentServiceImpl: ->searchApartmentById");
 
         ApartmentEntity apartment = apartmentRepository.findById(id)
@@ -117,9 +114,14 @@ public class RentApartmentServiceImpl implements RentApartmentService {
                     log.error("RentApartmentServiceImpl: searchApartmentId: Not found apartment by " + id);
                     return new ApartmentException(ID_APARTMENT_ERROR);
                 });
-        FullApartmentsInfo apartmentInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(apartment.getAddressEntity(), apartment);
         log.info("RentApartmentServiceImpl: <-searchApartmentById");
-        return apartmentInfo;
+        return apartment;
+    }
+
+    @Override
+    public FullApartmentsInfo prepareFullApartmentInfo(ApartmentEntity apartment) {
+        return applicationMapper.mappingAddressEntityAndApartmentEntity(apartment.getAddressEntity(), apartment);
+
     }
 
     /**
@@ -201,30 +203,37 @@ public class RentApartmentServiceImpl implements RentApartmentService {
      * @return
      */
     @Override
-    public FullApartmentsInfo bookingApartment(Long id, BookingDto bookingDto, String token) {
+    public BookingResponse bookingApartment(Long id, BookingDto bookingDto, String token) {
         UserApplicationEntity userApplication = authService.checkToken(token);
+        ApartmentEntity apartment = searchApartmentById(id);
+        checkAvailability(apartment);
 
-        BookingHistory bookingHistory = applicationMapper.mappingBookingDto(bookingDto);
+        BookingHistory bookingHistory = new BookingHistory(bookingDto.getStartBooking(),
+                bookingDto.getEndBooking(),
+                apartment.getPrice(),
+                userApplication,
+                apartment);
 
-        FullApartmentsInfo apartmentById = searchApartmentById(id);
-        ApartmentEntity apartment = applicationMapper.mappingFullApartmentInfo(apartmentById);
-        AddressEntity address = applicationMapper.mappingsFullApartmentInfo(apartmentById);
-        boolean availability = apartmentById.isAvailability();
-
-        if (availability) {
-            bookingHistory.setCheckIn(bookingHistory.getCheckIn());
-            bookingHistory.setCheckOut(bookingHistory.getCheckOut());
-            bookingHistory.setPriceDay(null);
-            bookingHistory.setTotalValueDiscount(null);
-            bookingHistory.setProducts(null);
-            bookingHistory.setUser(userApplication);
-            bookingHistory.setApartment(apartment);
-            FullApartmentsInfo apartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(address, apartment);
-            return apartmentsInfo;
-        } else {
-            return null;
-            //альтернативы возращения ,если не хочется возвращать  null
+        FullApartmentsInfo apartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(apartment.getAddressEntity(), apartment);
+        try {
+            return new BookingResponse(BOOKING_WITH_PRODUCT_DONE, apartmentsInfo);
+        } catch (Exception e) {
+            return new BookingResponse(BOOKING_WITH_OUT_PRODUCT_DONE, apartmentsInfo);
         }
+    }
+
+    /**
+     *
+     * метод проверяет свободны или забронированы апартаменты
+     * @param apartment
+     */
+    private void checkAvailability(ApartmentEntity apartment) {
+
+        if (!apartment.isAvailability()) {
+            throw new ApartmentException(NON_FREE_APARTMENT);
+        }
+        apartment.setAvailability(false);
+        apartmentRepository.save(apartment);
     }
 
 
