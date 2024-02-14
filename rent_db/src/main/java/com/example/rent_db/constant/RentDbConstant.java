@@ -9,7 +9,7 @@ public class RentDbConstant {
     public static final String REGISTRATION_USER = BASE_URL + "/registration-user";
     public static final String AUTH_URL = BASE_URL + "/auth-user";
     public static final String SEARCH_APARTMENT = BASE_URL + "/apartment-filters";
-    public static final String BOOKING_APARTMENT = BASE_URL + "/booking-apartment";
+    public static final String BOOKING_APARTMENT = BASE_URL + "/booking-apartment/id";
     public static final String SEARCH_APARTMENT_BY_LOCATION = BASE_URL + "/apartment-location";
     public static final String ADD_NEW_APARTMENT = BASE_URL + "/{id}/apartment-ad";
 
