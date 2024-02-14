@@ -34,10 +34,14 @@ public class BookingHistory {
     private UserApplicationEntity user;
 
     @ManyToOne()
-    @JoinColumn(name="apartment_id")
+    @JoinColumn(name = "apartment_id")
     private ApartmentEntity apartment;
 
-
-
-
+    public BookingHistory(LocalDateTime checkIn, LocalDateTime checkOut, Integer priceDay, UserApplicationEntity user, ApartmentEntity apartment) {
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.priceDay = priceDay;
+        this.user = user;
+        this.apartment = apartment;
+    }
 }
