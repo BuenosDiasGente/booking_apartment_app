@@ -4,6 +4,7 @@ import com.example.rent_db.model.dto.BookingDto;
 import com.example.rent_db.model.dto.CreateApartmentsDto;
 import com.example.rent_db.model.dto.FullApartmentsInfo;
 import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
+import com.example.rent_db.service.AuthService;
 import com.example.rent_db.service.RentApartmentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class RentApartmentController {
     private Logger log = LoggerFactory.getLogger(RentApartmentController.class);
 
     private final RentApartmentService userApplicationEntityService;
+   // private final AuthService authService;
 
 
     @GetMapping(SEARCH_APARTMENT)
@@ -39,15 +41,21 @@ public class RentApartmentController {
         return wrapResponse(userApplicationEntityService.searchApartments(city, countRooms, price));
     }
 
-//    @GetMapping(BOOKING_APARTMENT)
-//    public ResponseEntity<FullApartmentsInfo> bookingApartment(@RequestParam Long id,
-//                                                               @RequestBody(required = false) BookingDto bookingDto,
-//                                                               @RequestHeader(required = false) String token) {
-//        if(isNull(bookingDto)){
-//            return wrapResponse(userApplicationEntityService.searchApartmentById(id));
-//        }
-//
-//    }
+    @GetMapping(BOOKING_APARTMENT)
+    public ResponseEntity<FullApartmentsInfo> bookingApartment(@RequestParam Long id,
+                                                               @RequestBody(required = false) BookingDto bookingDto,
+                                                               @RequestHeader(required = false) String token) {
+        if (isNull(bookingDto)) {
+            return wrapResponse(userApplicationEntityService.searchApartmentById(id));
+        }
+
+        else {
+           // authService.checkToken(token);
+            return wrapResponse(userApplicationEntityService.bookingApartment(id, bookingDto, token));
+
+        }
+
+    }
 
 
     @GetMapping(SEARCH_APARTMENT_BY_LOCATION)
@@ -57,7 +65,7 @@ public class RentApartmentController {
     }
 
     @PostMapping(ADD_NEW_APARTMENT)
-    public ResponseEntity<String> addApartment(@PathVariable Long id,
+    public ResponseEntity<FullApartmentsInfo> addApartment(@PathVariable Long id,
                                                @RequestBody CreateApartmentsDto createApartmentsDto) {
         return ResponseEntity.ok(userApplicationEntityService.addApartment(id, createApartmentsDto));
     }

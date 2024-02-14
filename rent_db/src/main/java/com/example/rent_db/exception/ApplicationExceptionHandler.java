@@ -18,4 +18,13 @@ public class ApplicationExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<?> exceptionProcessing(TokenException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getNOT_FOUND_TOKEN());
+    }
+    @ExceptionHandler(ExitsApartmentException.class)
+    public ResponseEntity<?>exceptionProcessing(ExitsApartmentException exception){
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(exception.getMessage());
+    }
+
 }

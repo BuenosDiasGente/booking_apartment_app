@@ -1,6 +1,7 @@
 package com.example.rent_db.service;
 
 import com.example.rent_db.exception.ApartmentException;
+import com.example.rent_db.model.dto.BookingDto;
 import com.example.rent_db.model.dto.CreateApartmentsDto;
 import com.example.rent_db.model.dto.FullApartmentsInfo;
 import com.example.rent_db.model.dto.SearchApartmentsResponseDto;
@@ -18,10 +19,11 @@ public interface RentApartmentService {
 
     FullApartmentsInfo searchApartmentById(Long id);
 
-    String addApartment(Long id,CreateApartmentsDto createApartmentsDto);
+    FullApartmentsInfo addApartment(Long id,CreateApartmentsDto createApartmentsDto);
 
     SearchApartmentsResponseDto searchApartments(String city, Integer countRooms, Integer price);
 
     SearchApartmentsResponseDto searchApartmentsByLoc(String latitude, String longitude);
 
+    FullApartmentsInfo bookingApartment(Long id, BookingDto bookingDto, String token);
 }

@@ -1,5 +1,6 @@
 package com.example.rent_db.service.impl;
 
+import com.example.rent_db.exception.ApartmentException;
 import com.example.rent_db.exception.TokenException;
 import com.example.rent_db.model.dto.AuthDto;
 import com.example.rent_db.model.entity.UserApplicationEntity;
@@ -25,6 +26,12 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserApplicationRepository userApplicationEntityRepository;
 
+    /**
+     * метод регистрации пользователя
+     *
+     * @param user
+     * @return
+     */
     @Override
     public String registerUser(UserApplicationEntity user) {
         log.info("AuthServiceImpl: ->registerUser");
@@ -48,6 +55,12 @@ public class AuthServiceImpl implements AuthService {
         return REGISTRATION_DONE;
     }
 
+    /**
+     * метод авторизации пользователя
+     *
+     * @param user
+     * @return
+     */
     @Override
     public String authUser(AuthDto user) {
         log.info("AuthServiceImpl: ->authUser");
@@ -76,17 +89,28 @@ public class AuthServiceImpl implements AuthService {
         return uniqueToken + "|" + LocalDateTime.now().plusDays(1L);
     }
 
-//    public void checkToken(String token) {
-//        UserApplicationEntity userApplication = userApplicationEntityRepository.findUserApplicationEntitiesByToken(token).orElseThrow(() -> new TokenException);
-//    }
+    /**
+     * метод проверки авторизации пользователя
+     *
+     * @param token
+     */
+    @Override
+    public UserApplicationEntity checkToken(String token) {
+        log.info("AuthServiceImpl: ->checkToken");
+        UserApplicationEntity userApplication = userApplicationEntityRepository.findUserApplicationEntitiesByToken(token)
+                .orElseThrow(() -> {
+                    log.error("AuthServiceImpl: checkToken: Not found user by" + token);
+                    return new TokenException();
+                });
+        log.info("AuthServiceImpl: <-checkToken");
+        return userApplication;
+    }
 
 
     /**
      * планировщик задач
      * каждый час удаляет token авторизированного пользователя
      */
-
-    //Quartz scheduling ??
     @Scheduled(fixedDelay = 60000)
     public void checkValidTokensApplication() {
         log.info("AuthServiceImpl: scheduledRun -> checkValidTokensApplication");
