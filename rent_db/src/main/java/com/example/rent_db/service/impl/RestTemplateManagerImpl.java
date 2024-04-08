@@ -23,31 +23,54 @@ public class RestTemplateManagerImpl implements RestTemplateManager {
     private final IntegrationInfoRepository integrationInfoRepository;
 
     private final String ID_GEOCODER = "geocode_service";
+    private final String ID_PRODUCT = "product_service";
 
 
     @Override
     public GeocoderResponse getInfoByLocation(String latitude, String longitude) {
         RestTemplate restTemplate = new RestTemplate();
-        GeocoderResponse value = restTemplate.exchange(prepareUrl(latitude, longitude),
+        IntegrationInfo param = getIntegrationParam(ID_GEOCODER);
+        GeocoderResponse value = restTemplate.exchange(prepareUrlForLocation(latitude, longitude, param),
                 HttpMethod.GET,
                 new HttpEntity<>(null),
                 GeocoderResponse.class).getBody();
         return value;
     }
 
-    private String prepareUrl(String latitude, String longitude) {
+    private IntegrationInfo getIntegrationParam(String id) {
+        log.info("RestTemplateManagerImpl:-> getIntegrationParam");
 
-        log.info("RestTemplateManagerImpl:-> prepareUrl");
-
-        IntegrationInfo integrationData = integrationInfoRepository.findById(ID_GEOCODER)
+        IntegrationInfo integrationData = integrationInfoRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("RestTemplateManagerImpl: prepareUrl: 'integrationData' NotFound");
+                    log.error("RestTemplateManagerImpl: getIntegrationParam: 'integrationData' NotFound");
                     return new NotFoundConfigException();
                 });
         String apiKey = applicationDecoder(integrationData.getApiKey());
-
-        log.info("RestTemplateManagerImpl:<- prepareUrl");
-        return String.format(integrationData.getUrl(), latitude, longitude, apiKey);
+        integrationData.setApiKey(apiKey);
+        log.info("RestTemplateManagerImpl:<- getIntegrationParam");
+        return integrationData;
     }
+
+
+    private String prepareUrlForLocation(String latitude, String longitude, IntegrationInfo integrationData) {
+        return String.format(integrationData.getUrl(), latitude, longitude, integrationData.getApiKey());
+    }
+
+    @Override
+    public String prepareProductForBooking(Long id) {
+        RestTemplate restTemplate = new RestTemplate();
+        IntegrationInfo param = getIntegrationParam(ID_PRODUCT);
+        String value = restTemplate.exchange(prepareUrlForProductServer(id, param),
+                HttpMethod.GET,
+                new HttpEntity<>(null),
+                String.class).getBody();
+        return value;
+    }
+
+    private String prepareUrlForProductServer(Long id, IntegrationInfo integrationInfo) {
+
+        return String.format(integrationInfo.getUrl(), id, integrationInfo.getApiKey());
+    }
+
 
 }

@@ -12,9 +12,9 @@ public class ProductController {
 
     private final EmailSender emailSender;
 
-    @GetMapping("/test")
-    public String test() {
-        emailSender.sendEmail("тема письма","текст","serggeipetrov@gmail.com");
+    @GetMapping("/prepare-product-for-booking")
+    public String prepareProduct(Long id, String tokenValue) {
+      //  emailSender.sendEmail("тема письма","текст","serggeipetrov@gmail.com");
         return "Test";
     }
 
