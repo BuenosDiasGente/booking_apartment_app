@@ -12,6 +12,7 @@ import com.example.rent_db.model.geoCoderModels.Components;
 import com.example.rent_db.model.geoCoderModels.GeocoderResponse;
 import com.example.rent_db.repository.AddressRepository;
 import com.example.rent_db.repository.ApartmentRepository;
+import com.example.rent_db.repository.BookingRepository;
 import com.example.rent_db.repository.UserApplicationRepository;
 import com.example.rent_db.service.AuthService;
 import com.example.rent_db.service.RentApartmentService;
@@ -44,6 +45,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private final EntityManager entityManager;
     private final ApartmentRepository apartmentRepository;
     private final AuthService authService;
+    private final BookingRepository bookingRepository;
 
 
     /**
@@ -213,18 +215,21 @@ public class RentApartmentServiceImpl implements RentApartmentService {
                 apartment.getPrice(),
                 userApplication,
                 apartment);
+        bookingRepository.save(bookingHistory);
 
         FullApartmentsInfo apartmentsInfo = applicationMapper.mappingAddressEntityAndApartmentEntity(apartment.getAddressEntity(), apartment);
         try {
+            restTemplateManager.prepareProductForBooking(bookingHistory.getId());
             return new BookingResponse(BOOKING_WITH_PRODUCT_DONE, apartmentsInfo);
         } catch (Exception e) {
+            //продюсер
             return new BookingResponse(BOOKING_WITH_OUT_PRODUCT_DONE, apartmentsInfo);
         }
     }
 
     /**
-     *
      * метод проверяет свободны или забронированы апартаменты
+     *
      * @param apartment
      */
     private void checkAvailability(ApartmentEntity apartment) {
