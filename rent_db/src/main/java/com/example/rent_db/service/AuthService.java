@@ -7,4 +7,6 @@ public interface AuthService {
     String registerUser(UserApplicationEntity user);
 
     String authUser(AuthDto user);
+
+    UserApplicationEntity checkToken(String token);
 }

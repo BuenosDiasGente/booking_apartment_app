@@ -2,6 +2,7 @@ package com.example.rent_db.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "booking_history")
 public class BookingHistory {
 
@@ -34,10 +36,14 @@ public class BookingHistory {
     private UserApplicationEntity user;
 
     @ManyToOne()
-    @JoinColumn(name="apartment_id")
+    @JoinColumn(name = "apartment_id")
     private ApartmentEntity apartment;
 
-
-
-
+    public BookingHistory(LocalDateTime checkIn, LocalDateTime checkOut, Integer priceDay, UserApplicationEntity user, ApartmentEntity apartment) {
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.priceDay = priceDay;
+        this.user = user;
+        this.apartment = apartment;
+    }
 }
