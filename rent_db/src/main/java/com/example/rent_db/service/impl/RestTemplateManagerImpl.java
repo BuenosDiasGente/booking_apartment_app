@@ -66,9 +66,7 @@ public class RestTemplateManagerImpl implements RestTemplateManager {
                 String.class).getBody();
         return value;
     }
-
     private String prepareUrlForProductServer(Long id, IntegrationInfo integrationInfo) {
-
         return String.format(integrationInfo.getUrl(), id, integrationInfo.getApiKey());
     }
 
