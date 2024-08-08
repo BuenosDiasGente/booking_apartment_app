@@ -6,20 +6,19 @@ import com.example.rent_db.model.dto.FullApartmentsInfo;
 import com.example.rent_db.model.entity.AddressEntity;
 import com.example.rent_db.model.entity.ApartmentEntity;
 import com.example.rent_db.model.entity.BookingHistory;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+
+//@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ApplicationMapper {
-
-    FullApartmentsInfo mappingAddressEntityAndApartmentEntity(AddressEntity addressEntity, ApartmentEntity apartmentEntity);
-    ApartmentEntity mappingFullApartmentInfo(FullApartmentsInfo fullApartmentsInfo);
-    AddressEntity mappingsFullApartmentInfo(FullApartmentsInfo fullApartmentsInfo);
-
-    AddressEntity mappingCreateApartmentsDto(CreateApartmentsDto createApartmentsDto);
-
-    ApartmentEntity mappingCreateApartmentDto(CreateApartmentsDto createApartmentsDto);
-
-    BookingHistory mappingBookingDto(BookingDto bookingDto);
+//
+//    FullApartmentsInfo mappingAddressEntityAndApartmentEntity(AddressEntity addressEntity, ApartmentEntity apartmentEntity);
+//    ApartmentEntity mappingFullApartmentInfo(FullApartmentsInfo fullApartmentsInfo);
+//    AddressEntity mappingsFullApartmentInfo(FullApartmentsInfo fullApartmentsInfo);
+//
+//    AddressEntity mappingCreateApartmentsDto(CreateApartmentsDto createApartmentsDto);
+//
+//    ApartmentEntity mappingCreateApartmentDto(CreateApartmentsDto createApartmentsDto);
+//
+//    BookingHistory mappingBookingDto(BookingDto bookingDto);
 
 }

@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS booking_history
     product_id int8 REFERENCES product(id)
 
 );
+create sequence booking_history_sequence;
