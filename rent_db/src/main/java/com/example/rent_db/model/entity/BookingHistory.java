@@ -16,7 +16,9 @@ import java.util.List;
 public class BookingHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "booking_historySequence", sequenceName = "booking_history_sequence", allocationSize = 1,
+            initialValue = 3)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_historySequence")
     private Long id;
     @Column(name = "check_in")
     private LocalDateTime checkIn;
